@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const { messages, branch = "main" }: { messages: Message[]; branch: string } =
       await req.json();
 
-    // Connect to MemForks using static connect()
+    
     let memforks: any = null;
     try {
       memforks = await MemForksClient.connect({
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       console.log("MemForks connect skipped:", e);
     }
 
-    // Recall past memories
+    
     let memoryContext = "";
     if (memforks) {
       try {
@@ -57,7 +57,7 @@ After answering, suggest one follow-up question.${memoryContext}`,
           content: [{ type: "text" as const, text: m.content as string }],
         })),
       ],
-    });
+    }as any); 
 
     let fullText = "";
     const stream = new ReadableStream({
@@ -70,7 +70,7 @@ After answering, suggest one follow-up question.${memoryContext}`,
         }
         controller.close();
 
-        // Commit to MemForks after streaming
+        
         if (memforks) {
           try {
             const lastUserMsg = messages[messages.length - 1];
