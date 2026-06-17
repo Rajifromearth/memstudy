@@ -9,6 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ai-sdk/google": "0.0.52",
+    "@ai-sdk/groq": "^3.0.42",
+    "@ai-sdk/openai": "0.0.66",
+    "@memfork/core": "^0.1.6",
+    "@memfork/vercel-ai": "^0.1.1",
+    "ai": "3.4.33",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4"
