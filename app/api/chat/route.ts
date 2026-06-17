@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
     const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
-    const response = await groq("llama-3.1-8b-instant").doStream({
+    const response = await (groq("llama-3.1-8b-instant") as any).doStream({
       inputFormat: "messages",
       mode: { type: "regular" },
       prompt: [
@@ -57,7 +57,7 @@ After answering, suggest one follow-up question.${memoryContext}`,
           content: [{ type: "text" as const, text: m.content as string }],
         })),
       ],
-    }as any); 
+    }); 
 
     let fullText = "";
     const stream = new ReadableStream({
