@@ -10,19 +10,22 @@ export async function POST(req: Request) {
       await req.json();
 
     let memforks: any = null;
-    try {
-      memforks = await MemForksClient.connect({
-  treeId: process.env.MEMFORK_TREE_ID!.trim(),
-  signer: process.env.MEMFORK_PRIVATE_KEY!.trim(),
-  memwal: {
-    accountId: process.env.MEMFORK_MEMWAL_ACCOUNT!.trim(),
-    delegateKey: process.env.MEMFORK_MEMWAL_KEY!.trim(),
-    serverUrl: process.env.MEMFORK_RELAYER_URL!.trim(),
-  },
-});
-    } catch (e) {
-      console.log("MemForks connect skipped:", e);
-    }
+try {
+  const treeId = process.env.MEMFORK_TREE_ID!.trim();
+  console.log("TreeId length:", treeId.length);
+  console.log("TreeId value:", treeId);
+  memforks = await MemForksClient.connect({
+    treeId,
+    signer: process.env.MEMFORK_PRIVATE_KEY!.trim(),
+    memwal: {
+      accountId: process.env.MEMFORK_MEMWAL_ACCOUNT!.trim(),
+      delegateKey: process.env.MEMFORK_MEMWAL_KEY!.trim(),
+      serverUrl: process.env.MEMFORK_RELAYER_URL!.trim(),
+    },
+  });
+} catch (e) {
+  console.log("MemForks connect skipped:", e);
+}
 
     let memoryContext = "";
     if (memforks) {
