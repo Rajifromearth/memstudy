@@ -74,7 +74,7 @@ After answering, suggest one follow-up question.${memoryContext}`,
     });
 
     // Commit to MemForks after stream is set up
-    stream.pipeTo(new WritableStream()).catch(() => {});
+   
     if (memforks) {
       try {
         const lastUserMsg = messages[messages.length - 1];
