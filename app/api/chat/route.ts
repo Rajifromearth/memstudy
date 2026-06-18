@@ -10,22 +10,22 @@ export async function POST(req: Request) {
       await req.json();
 
     let memforks: any = null;
-try {
-  const treeId = process.env.MEMFORK_TREE_ID!.trim();
-  console.log("TreeId length:", treeId.length);
-  console.log("TreeId value:", treeId);
-  memforks = await MemForksClient.connect({
-    treeId,
-    signer: process.env.MEMFORK_PRIVATE_KEY!.trim(),
-    memwal: {
-      accountId: process.env.MEMFORK_MEMWAL_ACCOUNT!.trim(),
-      delegateKey: process.env.MEMFORK_MEMWAL_KEY!.trim(),
-      serverUrl: process.env.MEMFORK_RELAYER_URL!.trim(),
-    },
-  });
-} catch (e) {
-  console.log("MemForks connect skipped:", e);
-}
+    try {
+      const treeId = process.env.MEMFORK_TREE_ID!.trim();
+      console.log("TreeId length:", treeId.length);
+      console.log("TreeId value:", treeId);
+      memforks = await MemForksClient.connect({
+        treeId,
+        signer: process.env.MEMFORK_PRIVATE_KEY!.trim(),
+        memwal: {
+          accountId: process.env.MEMFORK_MEMWAL_ACCOUNT!.trim(),
+          delegateKey: process.env.MEMFORK_MEMWAL_KEY!.trim(),
+          serverUrl: process.env.MEMFORK_RELAYER_URL!.trim(),
+        },
+      });
+    } catch (e) {
+      console.log("MemForks connect skipped:", e);
+    }
 
     let memoryContext = "";
     if (memforks) {
@@ -70,20 +70,23 @@ After answering, suggest one follow-up question.${memoryContext}`,
           }
         }
         controller.close();
-
-        if (memforks) {
-          try {
-            const lastUserMsg = messages[messages.length - 1];
-            await memforks.commit(branch, {
-              message: `User: ${lastUserMsg.content}\nAssistant: ${fullText}`,
-            });
-            console.log("Memory committed to branch:", branch);
-          } catch (e) {
-            console.log("Commit skipped:", e);
-          }
-        }
       },
     });
+
+    // Commit to MemForks after stream is set up
+    stream.pipeTo(new WritableStream()).catch(() => {});
+    if (memforks) {
+      try {
+        const lastUserMsg = messages[messages.length - 1];
+        console.log("Attempting commit to branch:", branch);
+        await memforks.commit(branch, {
+          message: `User: ${lastUserMsg.content}\nAssistant: ${fullText}`,
+        });
+        console.log("Memory committed to branch:", branch);
+      } catch (e) {
+        console.error("Commit error:", e);
+      }
+    }
 
     return new Response(stream, {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
